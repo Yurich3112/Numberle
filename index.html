@@ -157,6 +157,67 @@
             color: var(--text-color);
         }
 
+        .rules-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .rules-content {
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: var(--text-color);
+            position: relative;
+        }
+
+        .rules-example-cell {
+            display: inline-flex;
+            margin: 5px;
+            position: relative;
+            width: 60px;
+            height: 60px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rules-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .rules-button {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 8px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
+        .example-row {
+            display: flex;
+            gap: 5px;
+            margin: 10px 0;
+            justify-content: center;
+        }
+
         @keyframes flip {
             0% { transform: rotateX(0deg); }
             50% { transform: rotateX(90deg); }
@@ -176,6 +237,76 @@
 <body>
     <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
     <button class="mode-toggle" onclick="toggleGameMode()">🎚️ Light Mode</button>
+    <button class="rules-button" onclick="showRules()">❓ Rules</button>
+    
+    <div id="rulesModal" class="rules-modal">
+        <div class="rules-content">
+            <span class="rules-close" onclick="hideRules()">&times;</span>
+            <h2>How to Play Numberle</h2>
+            
+            <h3>Objective</h3>
+            <p>Guess the hidden number in limited attempts. Numbers can be 4-6 digits long depending on difficulty.</p>
+            
+            <h3>How to Play</h3>
+            <ol>
+                <li>Choose difficulty (4-6 digits) using the buttons</li>
+                <li>Enter your guess in the input field</li>
+                <li>Submit your guess to get feedback</li>
+                <li>Use color hints to improve your next guess</li>
+                <li>Win by guessing correctly before attempts run out</li>
+            </ol>
+
+            <h3>Color Meanings</h3>
+            <div class="example-row">
+                <div class="cell green">5<div class="dots"><div class="dot"></div><div class="dot"></div></div></div>
+            </div>
+            <p><strong>Green</strong>: Correct digit in correct position (2 dots = appears twice in solution)</p>
+            
+            <div class="example-row">
+                <div class="cell yellow">3<div class="dots"><div class="dot"></div></div></div>
+            </div>
+            <p><strong>Yellow</strong>: Digit exists in number but wrong position (1 dot = appears once)</p>
+            
+            <div class="example-row">
+                <div class="cell red">8</div>
+            </div>
+            <p><strong>Gray</strong>: Digit not in the number</p>
+
+           <h3>Example Game</h3>
+<p>Solution: <strong>55671</strong></p>
+
+<div class="example-row">
+    <div class="cell yellow">1<div class="dots"><div class="dot"></div></div></div>
+    <div class="cell red">2</div>
+    <div class="cell red">3</div>
+    <div class="cell red">4</div>
+    <div class="cell yellow">5<div class="dots"><div class="dot"></div><div class="dot"></div></div></div>
+</div>
+<p><strong>Guess 1: 12345</strong> - Yellow '1' (exists once) and '5' (exists twice)</p>
+
+<div class="example-row">
+    <div class="cell green">5<div class="dots"><div class="dot"></div><div class="dot"></div></div></div>
+    <div class="cell yellow">6<div class="dots"><div class="dot"></div></div></div>
+    <div class="cell yellow">7<div class="dots"><div class="dot"></div></div></div>
+    <div class="cell red">8</div>
+    <div class="cell red">9</div>
+</div>
+<p><strong>Guess 2: 56789</strong> - Green '5' (correct position), yellow '6/7' (exists but wrong position)</p>
+
+            <h3>Game Modes</h3>
+            <p>🎚️ <strong>Normal Mode</strong>: 5 attempts for all difficulties</p>
+            <p>🎚️ <strong>Light Mode</strong>: More attempts (5-7) for longer numbers</p>
+
+            <h3>Tips</h3>
+            <ul>
+                <li>Start with numbers containing unique digits</li>
+                <li>Use yellow digits in different positions</li>
+                <li>Remember digit frequencies shown by dots</li>
+                <li>Numbers never start with 0</li>
+            </ul>
+        </div>
+    </div>
+
     <h1>Numberle</h1>
     <div class="difficulty-buttons">
         <button class="difficulty-btn" onclick="setDifficulty(4)">Easy (4)</button>
@@ -359,8 +490,27 @@
             setDifficulty(currentDifficulty);
         }
 
+        function showRules() {
+            document.getElementById('rulesModal').style.display = 'flex';
+        }
+
+        function hideRules() {
+            document.getElementById('rulesModal').style.display = 'none';
+        }
+
         guessInput.addEventListener('keypress', (e) => {
             if (!/\d/.test(e.key)) e.preventDefault();
+        });
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('rulesModal');
+            if (event.target === modal) {
+                hideRules();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') hideRules();
         });
 
         const savedTheme = localStorage.getItem('numberleTheme');
