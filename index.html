@@ -159,13 +159,16 @@
             touch-action: manipulation;
         }
 
-        .numpad-btn.special {
-            grid-column: span 1;
+        .desktop-input {
+            display: none;
+            margin: 20px auto;
+            text-align: center;
         }
 
-        .key-used { background-color: #d3d6da; }
-        .key-yellow { background-color: #c9b458; color: white; }
-        .key-green { background-color: #6aaa64; color: white; }
+        @media (min-width: 768px) {
+            .desktop-input { display: block; }
+            .numpad { display: none; }
+        }
 
         .rules-modal {
             display: none;
@@ -200,10 +203,20 @@
             cursor: pointer;
         }
 
-        @media (min-width: 768px) {
-            .numpad {
-                display: none;
-            }
+        .rules-example-row {
+            display: flex;
+            gap: 5px;
+            margin: 10px 0;
+            justify-content: center;
+        }
+
+        .rules-example-cell {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
 
         @keyframes flip {
@@ -220,6 +233,10 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
+
+        .key-used { background-color: #d3d6da; }
+        .key-yellow { background-color: #c9b458; color: white; }
+        .key-green { background-color: #6aaa64; color: white; }
     </style>
 </head>
 <body>
@@ -241,6 +258,11 @@
     <div class="board" id="board"></div>
     <div id="message"></div>
 
+    <div class="desktop-input">
+        <input type="text" id="desktopGuess" placeholder="Enter your guess">
+        <button onclick="makeGuess()">Submit</button>
+    </div>
+
     <div class="numpad">
         <button class="numpad-btn" data-key="1">1</button>
         <button class="numpad-btn" data-key="2">2</button>
@@ -251,16 +273,47 @@
         <button class="numpad-btn" data-key="7">7</button>
         <button class="numpad-btn" data-key="8">8</button>
         <button class="numpad-btn" data-key="9">9</button>
-        <button class="numpad-btn special" onclick="handleBackspace()">⌫</button>
+        <button class="numpad-btn" onclick="handleBackspace()">⌫</button>
         <button class="numpad-btn" data-key="0">0</button>
-        <button class="numpad-btn special" onclick="makeGuess()">↵</button>
+        <button class="numpad-btn" onclick="makeGuess()">↵</button>
     </div>
 
     <div id="rulesModal" class="rules-modal">
         <div class="rules-content">
             <span class="rules-close" onclick="hideRules()">&times;</span>
             <h2>How to Play Numberle</h2>
-            <!-- Include rules content from previous examples -->
+            
+            <h3>Objective</h3>
+            <p>Guess the hidden number in limited attempts. Numbers can be 4-6 digits long depending on difficulty.</p>
+            
+            <h3>How to Play</h3>
+            <ol>
+                <li>Choose difficulty using the number buttons (4-6)</li>
+                <li>Enter your guess using the numpad or keyboard</li>
+                <li>Submit your guess to get color feedback</li>
+                <li>Use clues to guess the number before attempts run out</li>
+            </ol>
+
+            <h3>Color Meanings</h3>
+            <div class="rules-example-row">
+                <div class="rules-example-cell green">5<div class="dots"><div class="dot"></div><div class="dot"></div></div></div>
+                <div class="rules-example-cell yellow">3<div class="dots"><div class="dot"></div></div></div>
+                <div class="rules-example-cell red">8</div>
+            </div>
+            <p><strong>Green:</strong> Correct digit in correct position</p>
+            <p><strong>Yellow:</strong> Digit exists but wrong position</p>
+            <p><strong>Gray:</strong> Digit not in the number</p>
+
+            <h3>Example Game</h3>
+            <p>Solution: <strong>55671</strong></p>
+            <div class="rules-example-row">
+                <div class="rules-example-cell yellow">1<div class="dots"><div class="dot"></div></div></div>
+                <div class="rules-example-cell red">2</div>
+                <div class="rules-example-cell red">3</div>
+                <div class="rules-example-cell red">4</div>
+                <div class="rules-example-cell yellow">5<div class="dots"><div class="dot"></div><div class="dot"></div></div></div>
+            </div>
+            <p><strong>Guess 1: 12345</strong> - Yellow '1' (exists once) and yellow '5' (exists twice)</p>
         </div>
     </div>
 
@@ -334,9 +387,18 @@
         }
 
         function makeGuess() {
+            let guess;
+            if (window.innerWidth >= 768) {
+                guess = document.getElementById('desktopGuess').value;
+                document.getElementById('desktopGuess').value = '';
+            } else {
+                guess = currentGuess.join('');
+                currentGuess = [];
+                updateGuessDisplay();
+            }
+
             if (attempts >= maxAttempts) return;
             
-            const guess = currentGuess.join('');
             if (guess.length !== currentDifficulty) {
                 message.textContent = `Enter ${currentDifficulty} digits!`;
                 return;
@@ -347,7 +409,7 @@
             }
 
             // Update key states
-            currentGuess.forEach((digit, index) => {
+            guess.split('').forEach((digit, index) => {
                 if (!targetNumber.includes(digit)) {
                     keyStates[digit] = 'key-used';
                 } else if (targetNumber[index] === digit) {
@@ -406,7 +468,6 @@
             }
 
             attempts++;
-            currentGuess = [];
 
             if (guess === targetNumber) {
                 message.textContent = `Correct! Attempts: ${attempts}`;
@@ -470,6 +531,10 @@
         // Event listeners
         document.querySelectorAll('.numpad-btn[data-key]').forEach(btn => {
             btn.addEventListener('click', () => handleNumpadInput(btn.dataset.key));
+        });
+
+        document.getElementById('desktopGuess').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') makeGuess();
         });
 
         window.onclick = function(event) {
