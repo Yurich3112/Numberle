@@ -393,8 +393,6 @@
                 document.getElementById('desktopGuess').value = '';
             } else {
                 guess = currentGuess.join('');
-                currentGuess = [];
-                updateGuessDisplay();
             }
 
             if (attempts >= maxAttempts) return;
@@ -406,6 +404,13 @@
             if (guess[0] === '0') {
                 message.textContent = 'Number cannot start with 0!';
                 return;
+            }
+
+            // Set numbers in cells immediately
+            const startIndex = attempts * currentDifficulty;
+            for (let i = 0; i < currentDifficulty; i++) {
+                const cell = board.children[startIndex + i];
+                cell.textContent = guess[i];
             }
 
             // Update key states
@@ -420,8 +425,7 @@
             });
             updateKeyColors();
 
-            // Process guess
-            const startIndex = attempts * currentDifficulty;
+            // Process guess colors and dots
             const cellStates = Array(currentDifficulty).fill('');
             const unmatchedTarget = Array.from(targetNumber);
 
@@ -468,6 +472,11 @@
             }
 
             attempts++;
+
+            if (window.innerWidth < 768) {
+                currentGuess = [];
+                updateGuessDisplay();
+            }
 
             if (guess === targetNumber) {
                 message.textContent = `Correct! Attempts: ${attempts}`;
