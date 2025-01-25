@@ -8,8 +8,9 @@
         :root {
             --bg-color: #ffffff;
             --text-color: #000000;
-            --cell-bg: #f0f0f0;
+            --cell-bg: #ffffff;
             --border-color: #ccc;
+            --key-bg: #f0f0f0;
         }
 
         [data-theme="dark"] {
@@ -17,13 +18,12 @@
             --text-color: #ffffff;
             --cell-bg: #2a2a2b;
             --border-color: #4a4a4b;
+            --key-bg: #363636;
         }
 
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
             margin: 0;
-            padding: 10px;
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
@@ -37,31 +37,63 @@
             position: relative;
         }
 
-        .mobile-controls {
-            display: flex;
-            gap: 15px;
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-left: 40px;
         }
 
-        .controls-icon {
-            font-size: 24px;
+        .controls-right {
+            display: flex;
+            gap: 15px;
+            margin-right: 10px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 20px;
             cursor: pointer;
-            user-select: none;
+            padding: 5px;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .difficulty-btn {
+            padding: 8px 16px;
+            cursor: pointer;
+            border: 2px solid var(--text-color);
+            background: none;
+            color: var(--text-color);
+            border-radius: 20px;
+        }
+
+        .difficulty-btn.active {
+            background-color: var(--text-color);
+            color: var(--bg-color);
         }
 
         .board {
             display: grid;
-            gap: 8px;
+            gap: 5px;
             justify-content: center;
-            margin: 20px 0;
+            margin: 10px 0;
+            padding: 0 5px;
         }
 
         .cell {
-            width: 55px;
-            height: 55px;
+            width: 50px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid var(--border-color);
+            border: 1px solid var(--border-color);
             font-size: 24px;
             font-weight: bold;
             position: relative;
@@ -71,30 +103,27 @@
 
         .cell.green {
             background-color: #6aaa64;
-            border-color: #6aaa64;
             color: white;
         }
 
         .cell.yellow {
             background-color: #c9b458;
-            border-color: #c9b458;
             color: white;
         }
 
-        .cell.grey {
-            background-color: #787c7e;
-            border-color: #787c7e;
+        .cell.red {
+            background-color: #d3d6da;
             color: white;
         }
 
         .dots {
             position: absolute;
-            bottom: 4px;
+            bottom: 2px;
             left: 0;
             right: 0;
             display: flex;
             justify-content: center;
-            gap: 3px;
+            gap: 2px;
         }
 
         .dot {
@@ -105,65 +134,76 @@
         }
 
         #message {
-            margin: 15px 0;
-            font-size: 16px;
-            min-height: 24px;
+            text-align: center;
+            margin: 10px 0;
+            min-height: 20px;
         }
 
         .numpad {
             display: grid;
-            gap: 6px;
-            margin: 20px 0;
-            padding: 0 10px;
-        }
-
-        .numpad-row {
-            display: flex;
-            gap: 6px;
-            justify-content: center;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            padding: 10px;
+            max-width: 400px;
+            margin: 0 auto;
         }
 
         .numpad-btn {
-            flex: 1;
-            height: 50px;
-            border: none;
-            border-radius: 5px;
+            background-color: var(--key-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
             font-size: 20px;
-            font-weight: bold;
-            background-color: var(--cell-bg);
-            color: var(--text-color);
+            padding: 15px 0;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.2s;
-            max-width: 80px;
+            touch-action: manipulation;
         }
 
-        .numpad-btn.action {
-            flex: 1.5;
-            max-width: 120px;
+        .numpad-btn.special {
+            grid-column: span 1;
         }
 
-        .difficulty-menu {
-            position: absolute;
-            top: 50px;
-            right: 10px;
-            background: var(--cell-bg);
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        .key-used { background-color: #d3d6da; }
+        .key-yellow { background-color: #c9b458; color: white; }
+        .key-green { background-color: #6aaa64; color: white; }
+
+        .rules-modal {
             display: none;
-            z-index: 100;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
 
-        .difficulty-btn {
-            display: block;
-            width: 100%;
-            padding: 8px 12px;
-            margin: 4px 0;
-            border: none;
-            border-radius: 4px;
+        .rules-content {
             background: var(--bg-color);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
             color: var(--text-color);
+            position: relative;
+            margin: 0 10px;
+        }
+
+        .rules-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
             cursor: pointer;
+        }
+
+        @media (min-width: 768px) {
+            .numpad {
+                display: none;
+            }
         }
 
         @keyframes flip {
@@ -172,69 +212,74 @@
             100% { transform: rotateX(0deg); }
         }
 
-        @media (min-width: 600px) {
-            .header, .numpad, .difficulty-menu {
-                display: none;
-            }
-            #desktop-controls {
-                display: block;
-            }
+        .bounce {
+            animation: bounce 0.5s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <button class="controls-icon" onclick="restartGame()">↻</button>
-        <h1>Numberle</h1>
-        <div class="mobile-controls">
-            <span class="controls-icon" onclick="toggleTheme()">🌓</span>
-            <span class="controls-icon" onclick="toggleDifficultyMenu()">⚙️</span>
-            <span class="controls-icon" onclick="showRules()">❓</span>
+        <button class="icon-btn" onclick="restartGame()">↻</button>
+        <div class="logo">Numberle</div>
+        <div class="controls-right">
+            <button class="icon-btn" onclick="toggleTheme()">🌓</button>
+            <button class="icon-btn" onclick="showRules()">❓</button>
         </div>
-        <div class="difficulty-menu">
-            <button class="difficulty-btn" onclick="setDifficulty(4)">Easy (4)</button>
-            <button class="difficulty-btn" onclick="setDifficulty(5)">Medium (5)</button>
-            <button class="difficulty-btn" onclick="setDifficulty(6)">Hard (6)</button>
-        </div>
+    </div>
+
+    <div class="difficulty-buttons">
+        <button class="difficulty-btn" onclick="setDifficulty(4)">4</button>
+        <button class="difficulty-btn" onclick="setDifficulty(5)">5</button>
+        <button class="difficulty-btn" onclick="setDifficulty(6)">6</button>
     </div>
 
     <div class="board" id="board"></div>
     <div id="message"></div>
 
     <div class="numpad">
-        <div class="numpad-row">
-            <button class="numpad-btn" data-key="1">1</button>
-            <button class="numpad-btn" data-key="2">2</button>
-            <button class="numpad-btn" data-key="3">3</button>
-        </div>
-        <div class="numpad-row">
-            <button class="numpad-btn" data-key="4">4</button>
-            <button class="numpad-btn" data-key="5">5</button>
-            <button class="numpad-btn" data-key="6">6</button>
-        </div>
-        <div class="numpad-row">
-            <button class="numpad-btn" data-key="7">7</button>
-            <button class="numpad-btn" data-key="8">8</button>
-            <button class="numpad-btn" data-key="9">9</button>
-        </div>
-        <div class="numpad-row">
-            <button class="numpad-btn action" data-key="Backspace">⌫</button>
-            <button class="numpad-btn" data-key="0">0</button>
-            <button class="numpad-btn action" data-key="Enter">↵</button>
+        <button class="numpad-btn" data-key="1">1</button>
+        <button class="numpad-btn" data-key="2">2</button>
+        <button class="numpad-btn" data-key="3">3</button>
+        <button class="numpad-btn" data-key="4">4</button>
+        <button class="numpad-btn" data-key="5">5</button>
+        <button class="numpad-btn" data-key="6">6</button>
+        <button class="numpad-btn" data-key="7">7</button>
+        <button class="numpad-btn" data-key="8">8</button>
+        <button class="numpad-btn" data-key="9">9</button>
+        <button class="numpad-btn special" onclick="handleBackspace()">⌫</button>
+        <button class="numpad-btn" data-key="0">0</button>
+        <button class="numpad-btn special" onclick="makeGuess()">↵</button>
+    </div>
+
+    <div id="rulesModal" class="rules-modal">
+        <div class="rules-content">
+            <span class="rules-close" onclick="hideRules()">&times;</span>
+            <h2>How to Play Numberle</h2>
+            <!-- Include rules content from previous examples -->
         </div>
     </div>
 
     <script>
+        const board = document.getElementById('board');
+        const message = document.getElementById('message');
+        const keyStates = {};
+        let currentGuess = [];
         let targetNumber = '';
         let frequencyMap = {};
         let attempts = 0;
         let currentDifficulty = 5;
-        let maxAttempts = 6;
-        let usedDigits = {
-            green: new Set(),
-            yellow: new Set(),
-            grey: new Set()
+        let gameMode = 'normal';
+        let theme = 'light';
+        const modeAttempts = {
+            normal: {4: 5, 5: 5, 6: 5},
+            light: {4: 5, 5: 6, 6: 7}
         };
+        let maxAttempts = modeAttempts[gameMode][currentDifficulty];
 
         function generateNumber() {
             let number = '';
@@ -246,11 +291,11 @@
         }
 
         function createBoard() {
-            const board = document.getElementById('board');
             board.innerHTML = '';
-            board.style.gridTemplateColumns = `repeat(${currentDifficulty}, 55px)`;
-            
-            for (let i = 0; i < maxAttempts * currentDifficulty; i++) {
+            const columns = currentDifficulty;
+            const rows = maxAttempts;
+            board.style.gridTemplateColumns = `repeat(${columns}, 50px)`;
+            for (let i = 0; i < rows * columns; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 board.appendChild(cell);
@@ -259,16 +304,31 @@
 
         function updateKeyColors() {
             document.querySelectorAll('.numpad-btn').forEach(btn => {
-                const key = btn.dataset.key;
-                if (!key || key === 'Backspace' || key === 'Enter') return;
+                const key = btn.textContent;
+                btn.className = `numpad-btn ${keyStates[key] || ''}`;
+            });
+        }
 
-                btn.classList.remove('green', 'yellow', 'grey');
-                if (usedDigits.green.has(key)) {
-                    btn.classList.add('green');
-                } else if (usedDigits.yellow.has(key)) {
-                    btn.classList.add('yellow');
-                } else if (usedDigits.grey.has(key)) {
-                    btn.classList.add('grey');
+        function handleNumpadInput(key) {
+            if (currentGuess.length < currentDifficulty) {
+                currentGuess.push(key);
+                updateGuessDisplay();
+            }
+        }
+
+        function handleBackspace() {
+            currentGuess = currentGuess.slice(0, -1);
+            updateGuessDisplay();
+        }
+
+        function updateGuessDisplay() {
+            const cells = document.querySelectorAll('.cell');
+            const startIndex = attempts * currentDifficulty;
+            
+            cells.forEach((cell, index) => {
+                if (index >= startIndex && index < startIndex + currentDifficulty) {
+                    const pos = index - startIndex;
+                    cell.textContent = currentGuess[pos] || '';
                 }
             });
         }
@@ -276,121 +336,154 @@
         function makeGuess() {
             if (attempts >= maxAttempts) return;
             
-            const guess = Array.from(document.querySelectorAll('.cell'))
-                .slice(attempts * currentDifficulty, (attempts + 1) * currentDifficulty)
-                .map(cell => cell.textContent)
-                .join('');
+            const guess = currentGuess.join('');
+            if (guess.length !== currentDifficulty) {
+                message.textContent = `Enter ${currentDifficulty} digits!`;
+                return;
+            }
+            if (guess[0] === '0') {
+                message.textContent = 'Number cannot start with 0!';
+                return;
+            }
 
-            if (guess.length !== currentDifficulty) return;
-
-            // Process guess and update cells
-            const targetArr = targetNumber.split('');
-            const guessArr = guess.split('');
-            const remaining = [...targetArr];
-            
-            // First pass: check correct positions
-            guessArr.forEach((digit, i) => {
-                const cell = board.children[attempts * currentDifficulty + i];
-                if (digit === targetArr[i]) {
-                    cell.classList.add('green');
-                    remaining[i] = null;
-                    usedDigits.green.add(digit);
+            // Update key states
+            currentGuess.forEach((digit, index) => {
+                if (!targetNumber.includes(digit)) {
+                    keyStates[digit] = 'key-used';
+                } else if (targetNumber[index] === digit) {
+                    keyStates[digit] = 'key-green';
+                } else if (!keyStates[digit] || keyStates[digit] !== 'key-green') {
+                    keyStates[digit] = 'key-yellow';
                 }
             });
-
-            // Second pass: check remaining digits
-            guessArr.forEach((digit, i) => {
-                const cell = board.children[attempts * currentDifficulty + i];
-                if (cell.classList.contains('green')) return;
-                
-                if (remaining.includes(digit)) {
-                    cell.classList.add('yellow');
-                    remaining[remaining.indexOf(digit)] = null;
-                    usedDigits.yellow.add(digit);
-                } else {
-                    cell.classList.add('grey');
-                    usedDigits.grey.add(digit);
-                }
-            });
-
-            // Add dots for frequency
-            guessArr.forEach((digit, i) => {
-                const cell = board.children[attempts * currentDifficulty + i];
-                const dots = document.createElement('div');
-                dots.className = 'dots';
-                
-                for (let j = 0; j < frequencyMap[digit]; j++) {
-                    const dot = document.createElement('div');
-                    dot.className = 'dot';
-                    dots.appendChild(dot);
-                }
-                cell.appendChild(dots);
-            });
-
-            attempts++;
             updateKeyColors();
 
+            // Process guess
+            const startIndex = attempts * currentDifficulty;
+            const cellStates = Array(currentDifficulty).fill('');
+            const unmatchedTarget = Array.from(targetNumber);
+
+            // First pass: Check correct positions
+            for (let i = 0; i < currentDifficulty; i++) {
+                const cell = board.children[startIndex + i];
+                if (guess[i] === targetNumber[i]) {
+                    cell.classList.add('green');
+                    cellStates[i] = 'green';
+                    unmatchedTarget[i] = null;
+                }
+            }
+
+            // Second pass: Check remaining digits
+            for (let i = 0; i < currentDifficulty; i++) {
+                if (cellStates[i] === 'green') continue;
+                const cell = board.children[startIndex + i];
+                const digit = guess[i];
+                
+                if (unmatchedTarget.includes(digit)) {
+                    cell.classList.add('yellow');
+                    unmatchedTarget[unmatchedTarget.indexOf(digit)] = null;
+                } else {
+                    cell.classList.add('red');
+                }
+            }
+
+            // Add dots
+            for (let i = 0; i < currentDifficulty; i++) {
+                const cell = board.children[startIndex + i];
+                const digit = guess[i];
+                
+                if (cell.classList.contains('green') || cell.classList.contains('yellow')) {
+                    const dotsContainer = document.createElement('div');
+                    dotsContainer.className = 'dots';
+                    
+                    for (let j = 0; j < frequencyMap[digit]; j++) {
+                        const dot = document.createElement('div');
+                        dot.className = 'dot';
+                        dotsContainer.appendChild(dot);
+                    }
+                    cell.appendChild(dotsContainer);
+                }
+            }
+
+            attempts++;
+            currentGuess = [];
+
             if (guess === targetNumber) {
-                document.getElementById('message').textContent = `Correct! in ${attempts} tries`;
-                setTimeout(() => alert('Congratulations!'), 100);
-            } else if (attempts >= maxAttempts) {
-                document.getElementById('message').textContent = `Solution: ${targetNumber}`;
+                message.textContent = `Correct! Attempts: ${attempts}`;
+                document.querySelectorAll('.cell').forEach((cell, index) => {
+                    setTimeout(() => cell.classList.add('bounce'), index * 50);
+                });
+                return;
+            }
+
+            if (attempts >= maxAttempts) {
+                message.textContent = `Game Over! Number was ${targetNumber}`;
+            } else {
+                message.textContent = `Attempts left: ${maxAttempts - attempts}`;
             }
         }
 
         function restartGame() {
             targetNumber = generateNumber();
             frequencyMap = {};
-            Array.from(targetNumber).forEach(d => frequencyMap[d] = (frequencyMap[d] || 0) + 1);
-            
+            for (const digit of targetNumber) {
+                frequencyMap[digit] = (frequencyMap[digit] || 0) + 1;
+            }
             attempts = 0;
-            usedDigits = { green: new Set(), yellow: new Set(), grey: new Set() };
-            document.getElementById('message').textContent = '';
-            createBoard();
+            currentGuess = [];
+            message.textContent = '';
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.className = 'cell';
+                cell.innerHTML = '';
+            });
+            Object.keys(keyStates).forEach(key => delete keyStates[key]);
             updateKeyColors();
+            createBoard();
         }
 
-        function setDifficulty(difficulty) {
-            currentDifficulty = difficulty;
-            maxAttempts = difficulty + 1;
-            document.querySelector('.difficulty-menu').style.display = 'none';
+        function setDifficulty(length) {
+            currentDifficulty = length;
+            maxAttempts = modeAttempts[gameMode][length];
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.textContent === length.toString()) {
+                    btn.classList.add('active');
+                }
+            });
             restartGame();
         }
 
         function toggleTheme() {
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            theme = theme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('numberleTheme', theme);
         }
 
-        function toggleDifficultyMenu() {
-            const menu = document.querySelector('.difficulty-menu');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        function showRules() {
+            document.getElementById('rulesModal').style.display = 'flex';
+        }
+
+        function hideRules() {
+            document.getElementById('rulesModal').style.display = 'none';
         }
 
         // Event listeners
-        document.querySelectorAll('.numpad-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const key = btn.dataset.key;
-                const currentRow = Array.from(document.querySelectorAll('.cell'))
-                    .slice(attempts * currentDifficulty, (attempts + 1) * currentDifficulty);
+        document.querySelectorAll('.numpad-btn[data-key]').forEach(btn => {
+            btn.addEventListener('click', () => handleNumpadInput(btn.dataset.key));
+        });
 
-                if (key === 'Backspace') {
-                    const filled = currentRow.filter(c => c.textContent).length;
-                    if (filled > 0) currentRow[filled - 1].textContent = '';
-                } 
-                else if (key === 'Enter') {
-                    makeGuess();
-                }
-                else if (currentRow.filter(c => c.textContent).length < currentDifficulty) {
-                    currentRow.filter(c => !c.textContent)[0].textContent = key;
-                }
-            });
+        window.onclick = function(event) {
+            if (event.target.classList.contains('rules-modal')) hideRules();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') hideRules();
         });
 
         // Initialize
-        document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light');
-        restartGame();
+        const savedTheme = localStorage.getItem('numberleTheme');
+        if (savedTheme) toggleTheme();
+        setDifficulty(5);
     </script>
 </body>
 </html>
