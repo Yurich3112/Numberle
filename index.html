@@ -49,20 +49,20 @@
             animation: flip 0.6s ease-out;
         }
 
-            .cell.green {
-                background-color: #6aaa64;
-                color: white;
-            }
+        .cell.green {
+            background-color: #6aaa64;
+            color: white;
+        }
 
-            .cell.yellow {
-                background-color: #c9b458;
-                color: white;
-            }
+        .cell.yellow {
+            background-color: #c9b458;
+            color: white;
+        }
 
-            .cell.red {
-                background-color: #d3d6da;
-                color: white;
-            }
+        .cell.red {
+            background-color: #d3d6da;
+            color: white;
+        }
 
         .digit {
             font-size: 24px;
@@ -128,10 +128,10 @@
             color: var(--text-color);
         }
 
-            .difficulty-btn.active {
-                background-color: var(--text-color);
-                color: var(--bg-color);
-            }
+        .difficulty-btn.active {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+        }
 
         .theme-toggle {
             position: fixed;
@@ -145,18 +145,22 @@
             color: var(--text-color);
         }
 
+        .mode-toggle {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            padding: 8px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
         @keyframes flip {
-            0% {
-                transform: rotateX(0deg);
-            }
-
-            50% {
-                transform: rotateX(90deg);
-            }
-
-            100% {
-                transform: rotateX(0deg);
-            }
+            0% { transform: rotateX(0deg); }
+            50% { transform: rotateX(90deg); }
+            100% { transform: rotateX(0deg); }
         }
 
         .bounce {
@@ -164,18 +168,14 @@
         }
 
         @keyframes bounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
     </style>
 </head>
 <body>
     <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+    <button class="mode-toggle" onclick="toggleGameMode()">🎚️ Light Mode</button>
     <h1>Numberle</h1>
     <div class="difficulty-buttons">
         <button class="difficulty-btn" onclick="setDifficulty(4)">Easy (4)</button>
@@ -198,10 +198,14 @@
         let targetNumber = '';
         let frequencyMap = {};
         let attempts = 0;
-        let maxAttempts = 5;
-        let highScore = Infinity;
         let currentDifficulty = 5;
+        let gameMode = 'normal';
         let theme = 'light';
+        const modeAttempts = {
+            normal: {4: 5, 5: 5, 6: 5},
+            light: {4: 5, 5: 6, 6: 7}
+        };
+        let maxAttempts = modeAttempts[gameMode][currentDifficulty];
 
         function generateNumber() {
             let number = '';
@@ -212,10 +216,12 @@
             return number;
         }
 
-        function createBoard(length) {
+        function createBoard() {
             board.innerHTML = '';
-            board.style.gridTemplateColumns = `repeat(${length}, 60px)`;
-            for (let i = 0; i < maxAttempts * length; i++) {
+            const columns = currentDifficulty;
+            const rows = maxAttempts;
+            board.style.gridTemplateColumns = `repeat(${columns}, 60px)`;
+            for (let i = 0; i < rows * columns; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 board.appendChild(cell);
@@ -229,13 +235,13 @@
             }
 
             const guess = guessInput.value;
-
+            
             if (!/^\d+$/.test(guess)) {
                 message.textContent = 'Only numbers allowed!';
                 return;
             }
-            if (guess.length !== targetNumber.length) {
-                message.textContent = `Guess must be ${targetNumber.length} digits!`;
+            if (guess.length !== currentDifficulty) {
+                message.textContent = `Guess must be ${currentDifficulty} digits!`;
                 return;
             }
             if (guess[0] === '0') {
@@ -243,14 +249,14 @@
                 return;
             }
 
-            const startIndex = attempts * targetNumber.length;
-            const cellStates = Array(targetNumber.length).fill('');
+            const startIndex = attempts * currentDifficulty;
+            const cellStates = Array(currentDifficulty).fill('');
             const unmatchedTarget = Array.from(targetNumber);
 
-            for (let i = 0; i < targetNumber.length; i++) {
+            for (let i = 0; i < currentDifficulty; i++) {
                 const cell = board.children[startIndex + i];
                 const digit = guess[i];
-
+                
                 if (digit === targetNumber[i]) {
                     cell.className = 'cell green';
                     cellStates[i] = 'green';
@@ -258,12 +264,12 @@
                 }
             }
 
-            for (let i = 0; i < targetNumber.length; i++) {
+            for (let i = 0; i < currentDifficulty; i++) {
                 if (cellStates[i] === 'green') continue;
-
+                
                 const cell = board.children[startIndex + i];
                 const digit = guess[i];
-
+                
                 if (unmatchedTarget.includes(digit)) {
                     cell.className = 'cell yellow';
                     unmatchedTarget[unmatchedTarget.indexOf(digit)] = null;
@@ -272,10 +278,10 @@
                 }
             }
 
-            for (let i = 0; i < targetNumber.length; i++) {
+            for (let i = 0; i < currentDifficulty; i++) {
                 const cell = board.children[startIndex + i];
                 const digit = guess[i];
-
+                
                 cell.innerHTML = '';
                 const digitDiv = document.createElement('div');
                 digitDiv.className = 'digit';
@@ -285,7 +291,7 @@
                 if (cell.classList.contains('green') || cell.classList.contains('yellow')) {
                     const dotsContainer = document.createElement('div');
                     dotsContainer.className = 'dots';
-
+                    
                     for (let j = 0; j < frequencyMap[digit]; j++) {
                         const dot = document.createElement('div');
                         dot.className = 'dot';
@@ -304,10 +310,6 @@
                         cell.classList.add('bounce');
                     }, index * 100);
                 });
-                if (attempts < highScore) {
-                    highScore = attempts;
-                    message.textContent += ' New High Score!';
-                }
                 return;
             }
 
@@ -328,15 +330,15 @@
             message.textContent = '';
             guessInput.value = '';
             guessInput.setAttribute('maxlength', currentDifficulty);
-            createBoard(currentDifficulty);
+            createBoard();
         }
 
         function setDifficulty(length) {
             currentDifficulty = length;
-            maxAttempts = length + 1;
+            maxAttempts = modeAttempts[gameMode][length];
             document.querySelectorAll('.difficulty-btn').forEach(btn => {
                 btn.classList.remove('active');
-                if (Number(btn.textContent.match(/\d+/)[0]) === length) {
+                if(Number(btn.textContent.match(/\d+/)[0]) === length) {
                     btn.classList.add('active');
                 }
             });
@@ -349,6 +351,14 @@
             localStorage.setItem('numberleTheme', theme);
         }
 
+        function toggleGameMode() {
+            gameMode = gameMode === 'normal' ? 'light' : 'normal';
+            document.querySelector('.mode-toggle').textContent = 
+                `🎚️ ${gameMode === 'light' ? 'Normal' : 'Light'} Mode`;
+            localStorage.setItem('numberleMode', gameMode);
+            setDifficulty(currentDifficulty);
+        }
+
         guessInput.addEventListener('keypress', (e) => {
             if (!/\d/.test(e.key)) e.preventDefault();
         });
@@ -358,6 +368,11 @@
             theme = savedTheme;
             document.documentElement.setAttribute('data-theme', theme);
         }
+
+        const savedMode = localStorage.getItem('numberleMode') || 'normal';
+        gameMode = savedMode;
+        document.querySelector('.mode-toggle').textContent = 
+            `🎚️ ${gameMode === 'light' ? 'Normal' : 'Light'} Mode`;
 
         setDifficulty(5);
     </script>
